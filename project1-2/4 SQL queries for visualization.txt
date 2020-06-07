@@ -1,0 +1,58 @@
+/* 1 visualization Who is Writing the Rock Music  */
+SELECT Art.ArtistId,Art.Name,Count(Gen.Name)
+FROM Artist Art 
+JOIN Album ON Art.ArtistId=Album.ArtistId
+JOIN Track ON Album.AlbumId=Track.AlbumId
+JOIN Genre Gen ON Track.GenreId=Gen.GenreId
+WHERE Gen.Name="Rock"
+GROUP BY Art.Name
+ORDER BY COUNT(Gen.Name) desc
+LIMIT 10;
+
+
+/*2 visualization Countries Purchase of Music */
+SELECT Art.Name, 
+	   SUM(InvoiceLine.Quantity)*(InvoiceLine.UnitPrice) AS AmountSpent,
+       Customer.CustomerId,
+       Customer.FirstName,  
+       Customer.LastName
+FROM  Artist Art
+JOIN Album ON Art.ArtistId=Album.ArtistId
+JOIN Track ON Album.AlbumId=Track.AlbumId
+JOIN InvoiceLine ON Track.TrackId=InvoiceLine.TrackId
+JOIN Invoice ON InvoiceLine.InvoiceId=Invoice.InvoiceId
+JOIN Customer ON Invoice.CustomerId=Customer.CustomerId
+WHERE Art.Name = "Iron Maiden" 
+GROUP BY Customer.CustomerId 
+ORDER BY AmountSpent DESC;
+
+/*3  Average Milliseconds*/
+SELECT Tra.Name, Tra.Milliseconds as AvgLength
+FROM Track Tra
+JOIN MediaType MTTable
+ON Tra.MediaTypeId=MTTable.MediaTypeId
+WHERE  (SELECT AVG(Milliseconds) FROM Track)<Tra.Milliseconds
+ORDER BY AvgLength DESC;
+
+/* 4 Money spent on music by countries */
+
+WITH table1 AS 
+(
+	SELECT c.Country, SUM(i.Total) TotalSpent, c.FirstName, c.LastName, c.CustomerId
+	FROM 
+		Customer c
+		JOIN Invoice i ON c.CustomerId = i.CustomerId
+	GROUP BY c.CustomerId
+)
+
+SELECT table1.*
+FROM table1
+JOIN(
+	SELECT Country, MAX(TotalSpent) AS MaxTotalSpent, FirstName, LastName, CustomerId
+	FROM table1
+	GROUP BY Country
+)table2
+ON table1.Country = table2.Country
+WHERE table1.TotalSpent = table2.MaxTotalSpent
+ORDER BY Country;
+

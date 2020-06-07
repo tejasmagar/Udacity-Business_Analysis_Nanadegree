@@ -1,8 +1,9 @@
-SELECT DISTINCT(Cust.Email),Cust.FirstName,Cust.LastName,Gen.Name
-FROM Customer Cust, Genre Gen,Invoice,InvoiceLine,Track
-WHERE Cust.CustomerId=Invoice.CustomerId
-AND Invoice.InvoiceId=InvoiceLine.InvoiceId
-AND InvoiceLine.TrackId=Track.TrackId
-AND Track.GenreId=Gen.GenreId
-AND Gen.Name="Rock"
-ORDER BY  Cust.Email;
+SELECT Art.ArtistId,Art.Name,Count(Gen.Name)
+FROM Artist Art 
+JOIN Album ON Art.ArtistId=Album.ArtistId
+JOIN Track ON Album.AlbumId=Track.AlbumId
+JOIN Genre Gen ON Track.GenreId=Gen.GenreId
+WHERE Gen.Name="Rock"
+GROUP BY Art.Name
+ORDER BY COUNT(Gen.Name) desc
+LIMIT 10;

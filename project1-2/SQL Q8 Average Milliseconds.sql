@@ -1,5 +1,6 @@
-SELECT Name, Milliseconds FROM (
-	SELECT Tra.Name, Tra.Milliseconds, (SELECT AVG(Milliseconds) FROM Track) AS AvgLenght
-	FROM Track Tra
-	WHERE AvgLenght < Tra.Milliseconds
-	ORDER BY Tra.Milliseconds DESC
+SELECT Tra.Name, Tra.Milliseconds as AvgLength
+FROM Track Tra
+JOIN MediaType MTTable
+ON Tra.MediaTypeId=MTTable.MediaTypeId
+WHERE  (SELECT AVG(Milliseconds) FROM Track)<Tra.Milliseconds
+ORDER BY AvgLength DESC;
